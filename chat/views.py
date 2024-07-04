@@ -40,7 +40,7 @@ def login_view(request):
 
 def register_new_user(request):
     if request.method == 'POST':
-        User.objects.create_user(username=request.POST.get('username'), email=request.POST.get('email'), password=request.POST.get('password'))
+        user = User.objects.create_user(username=request.POST.get('username'), email=request.POST.get('email'), password=request.POST.get('password'))
         return HttpResponseRedirect('/login/')
 
     return render(request, 'register/register.html')
