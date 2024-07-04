@@ -1,0 +1,51 @@
+{% extends "base.html" %} {% block content %}
+
+<h1>Sign up</h1>
+
+<form method="POST" action="/login/">
+  {% csrf_token %}
+
+  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+    <input
+      class="mdl-textfield__input"
+      type="text"
+      id="username_input"
+      name="username"
+      required
+    /><label class="mdl-textfield__label" for="username_input"
+      >Username...</label
+    >
+  </div>
+  <br />
+  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+    <input
+      class="mdl-textfield__input"
+      type="email"
+      id="user_email"
+      name="email"
+      required
+    /><label class="mdl-textfield__label" for="user_email">Email...</label>
+  </div>
+  <br />
+  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+    <input
+      class="mdl-textfield__input"
+      id="password_input"
+      type="password"
+      name="password"
+      required
+    />
+    <label class="mdl-textfield__label" for="password_input">Password...</label>
+  </div>
+
+  <br />
+  <div>
+    <button
+      class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+    >
+      Sign up
+    </button>
+  </div>
+</form>
+
+{% endblock %}
