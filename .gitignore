@@ -114,3 +114,8 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+
+# chat
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
