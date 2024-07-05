@@ -1,38 +1,93 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "base.html" %} {% block content %}
 
 <!-- Your content goes here -->
 
-    {% if request.user.is_authenticated %}
- 
-      {% for message in messages %}        
-            <div><b>{{ message.author}}:</b> {{ message.text }} <span class="message-date">({{ message.created_at }}<span>)</div>
-        {% endfor %}
+{% if request.user.is_authenticated %}
 
-      <!-- Numeric Textfield with Floating Label -->
-      <form action="/chat/" method="post">
-        {% csrf_token %}
-        <div
-          class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label"
-        >
-          <input
-            name="textmessage"
-            class="mdl-textfield__input"
-            type="text"
-            id="sample3"
-          />
-          <label class="mdl-textfield__label" for="sample3">Text...</label>
-        </div>
+<div id="messageContainer">
+  {% for message in messages %}
+  <div>
+    <b>{{ message.author}}:</b> {{ message.text }}
+    <span class="message-date">({{ message.created_at }})</span>
+  </div>
+  {% endfor %}
+</div>
 
-        <button
-          class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
-        >
-          Send
-        </button>
-      </form>
-        {% else %}
-        <h1>Not logged in!</h1>
-        <p>You are not logged in. Please log in.<br>Please click <a href="/login/">here</a></p>
-    {% endif %}
+<script>
+  async function sendMessage() {
+    let fd = new FormData();
+    let token = "{{ csrf_token }}";
 
-{% endblock %}
+    fd.append("textmessage", messageField.value);
+    fd.append("csrfmiddlewaretoken", token);
+    try {
+      messageDate = new Date().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+      messageContainer.innerHTML += `
+                    <div id="deleteMessage">
+                        <b>{{ request.user.username}}:</b> ${messageField.value} <span class="message-date">(${messageDate})</span>
+                    </div>`;
+
+      let response = await fetch("/chat/", {
+        method: "POST",
+        body: fd,
+      });
+      let json = await response.json();
+      let json_message = JSON.parse(json);
+      console.log("json is", json_message);
+
+      document.getElementById("deleteMessage").remove();
+
+      DateFromString = new Date(
+        json_message.fields.created_at
+      ).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+
+      messageContainer.innerHTML += `
+                    <div>
+                        <b>${json_message.fields.author}:</b> ${json_message.fields.text} <span class="message-date">(${DateFromString})</span>
+                    </div>`;
+
+      console.log("Success!!");
+    } catch (e) {
+      console.error("An error occured", e);
+    }
+  }
+</script>
+
+<!-- Numeric Textfield with Floating Label -->
+{% comment %}
+<form action="/chat/" method="post">
+  So sieht ein HTML request aus! {% endcomment %}
+  <form onsubmit="sendMessage(); return false;" method="post">
+    {% csrf_token %}
+    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <input
+        name="textmessage"
+        class="mdl-textfield__input"
+        type="text"
+        id="messageField"
+      />
+      <label class="mdl-textfield__label" for="messageField">Text...</label>
+    </div>
+
+    <button
+      class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+    >
+      Send
+    </button>
+  </form>
+  {% else %}
+  <h1>Not logged in!</h1>
+  <p>
+    You are not logged in. Please log in.<br />Please click
+    <a href="/login/">here</a>
+  </p>
+  {% endif %} {% endblock %}
+</form>
