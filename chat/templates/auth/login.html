@@ -4,7 +4,30 @@
 
 {% if wrongPassword %}
 <p>Username or password is wrong!</p>
-{% endif %}
+{% endif %} {% comment %}
+<script>
+  async function loginUser() {
+    let fd = new FormData();
+    let token = "{{ csrf_token }}";
+
+    fd.append("username", usernameField.value);
+    fd.append("password", passwordField.value);
+    fd.append("csrfmiddlewaretoken", token);
+    try {
+      let response = await fetch("/login/", {
+        method: "POST",
+        body: fd,
+      });
+
+      console.log(response);
+
+      console.log("Success!!");
+    } catch (e) {
+      console.error("An error occured", e);
+    }
+  }
+</script>
+{% endcomment %}
 
 <form method="POST" action="/login/">
   {% csrf_token %}
@@ -14,19 +37,21 @@
     <input
       class="mdl-textfield__input"
       type="text"
-      id="sample3"
+      id="usernameField"
       name="username"
-    /><label class="mdl-textfield__label" for="sample3">Username...</label>
+    /><label class="mdl-textfield__label" for="usernameField"
+      >Username...</label
+    >
   </div>
   <br />
   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
     <input
       class="mdl-textfield__input"
-      id="sample4"
+      id="passwordField"
       type="password"
       name="password"
     />
-    <label class="mdl-textfield__label" for="sample4">Password...</label>
+    <label class="mdl-textfield__label" for="passwordField">Password...</label>
   </div>
 
   <br />
