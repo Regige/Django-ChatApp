@@ -4,10 +4,11 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from django.core import serializers
+# from django.core import serializers
 
 from chat.models import Message
 from chat.models import Chat
+from .serializers import MessageSerializer
 
 
 # Create your views here.
@@ -21,8 +22,10 @@ def index(request):
         
         testChat = Chat.objects.get(id=1)        
         new_message = Message.objects.create(text=request.POST['textmessage'], chat=testChat, author=request.user, receiver=request.user)
-        serialized_obj = serializers.serialize('json', [new_message])
-        return JsonResponse(serialized_obj[1:-1], safe=False)
+        # serialized_obj = serializers.serialize('json', [new_message])
+        # return JsonResponse(serialized_obj[1:-1], safe=False)
+        serializer = MessageSerializer(new_message)
+        return JsonResponse(serializer.data, safe=False)
     chatMessages = Message.objects.filter(chat__id=1)
     return render(request, 'chat/index.html', {'username': 'Regina', 'messages': chatMessages})
 

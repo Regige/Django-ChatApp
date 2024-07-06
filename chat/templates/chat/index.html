@@ -28,22 +28,20 @@
       });
       messageContainer.innerHTML += `
                     <div id="deleteMessage">
-                        <b>{{ request.user.username}}:</b> ${messageField.value} <span class="message-date">(${messageDate})</span>
+                        <b class="message-date">{{ request.user.username}}:</b> ${messageField.value} <span class="message-date">(${messageDate})</span>
                     </div>`;
 
       let response = await fetch("/chat/", {
         method: "POST",
         body: fd,
       });
-      let json = await response.json();
-      let json_message = JSON.parse(json);
-      console.log("json is", json_message);
+
+      let data = await response.json();
+      console.log(data);
 
       document.getElementById("deleteMessage").remove();
 
-      DateFromString = new Date(
-        json_message.fields.created_at
-      ).toLocaleDateString("en-US", {
+      DateFromString = new Date(data.created_at).toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -51,8 +49,10 @@
 
       messageContainer.innerHTML += `
                     <div>
-                        <b>${json_message.fields.author}:</b> ${json_message.fields.text} <span class="message-date">(${DateFromString})</span>
+                        <b>${data.author_username}:</b> ${data.text} <span class="message-date">(${DateFromString})</span>
                     </div>`;
+
+      messageField.value = "";
 
       console.log("Success!!");
     } catch (e) {
